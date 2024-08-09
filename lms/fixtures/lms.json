@@ -1,5 +1,14 @@
 [
 {
+    "model": "lms.course",
+    "pk": 1,
+    "fields": {
+        "title": "¬ведение в программирование",
+        "preview": "",
+        "description": "¬ведение в программирование"
+    }
+},
+{
     "model": "lms.lesson",
     "pk": 1,
     "fields": {
