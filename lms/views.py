@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 
-class CourseViewSet(ModelViewSet):
+class CourseViewSet(viewsets.ModelViewSet):
     """Выводит все курсы"""
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
