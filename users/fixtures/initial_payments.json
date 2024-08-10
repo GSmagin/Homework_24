@@ -1,0 +1,242 @@
+[
+    {
+        "model": "users.payment",
+        "pk": 1,
+        "fields": {
+            "user": 2,
+            "date": "2024-08-01T10:00:00Z",
+            "course": 1,
+            "lesson": null,
+            "amount": "150.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 2,
+        "fields": {
+            "user": 3,
+            "date": "2024-08-02T11:00:00Z",
+            "course": null,
+            "lesson": 2,
+            "amount": "75.50",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 3,
+        "fields": {
+            "user": 4,
+            "date": "2024-08-03T12:00:00Z",
+            "course": 2,
+            "lesson": null,
+            "amount": "200.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 4,
+        "fields": {
+            "user": 5,
+            "date": "2024-08-04T13:00:00Z",
+            "course": null,
+            "lesson": 5,
+            "amount": "60.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 5,
+        "fields": {
+            "user": 2,
+            "date": "2024-08-05T14:00:00Z",
+            "course": 1,
+            "lesson": null,
+            "amount": "145.75",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 6,
+        "fields": {
+            "user": 3,
+            "date": "2024-08-06T15:00:00Z",
+            "course": null,
+            "lesson": 3,
+            "amount": "90.50",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 7,
+        "fields": {
+            "user": 4,
+            "date": "2024-08-07T16:00:00Z",
+            "course": 2,
+            "lesson": null,
+            "amount": "180.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 8,
+        "fields": {
+            "user": 5,
+            "date": "2024-08-08T17:00:00Z",
+            "course": null,
+            "lesson": 4,
+            "amount": "85.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 9,
+        "fields": {
+            "user": 2,
+            "date": "2024-08-09T18:00:00Z",
+            "course": 1,
+            "lesson": null,
+            "amount": "155.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 10,
+        "fields": {
+            "user": 3,
+            "date": "2024-08-10T19:00:00Z",
+            "course": null,
+            "lesson": 1,
+            "amount": "100.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 11,
+        "fields": {
+            "user": 4,
+            "date": "2024-08-11T20:00:00Z",
+            "course": 2,
+            "lesson": null,
+            "amount": "210.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 12,
+        "fields": {
+            "user": 5,
+            "date": "2024-08-12T21:00:00Z",
+            "course": null,
+            "lesson": 5,
+            "amount": "70.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 13,
+        "fields": {
+            "user": 2,
+            "date": "2024-08-13T22:00:00Z",
+            "course": 1,
+            "lesson": null,
+            "amount": "135.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 14,
+        "fields": {
+            "user": 3,
+            "date": "2024-08-14T23:00:00Z",
+            "course": null,
+            "lesson": 3,
+            "amount": "80.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 15,
+        "fields": {
+            "user": 4,
+            "date": "2024-08-15T08:00:00Z",
+            "course": 2,
+            "lesson": null,
+            "amount": "175.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 16,
+        "fields": {
+            "user": 5,
+            "date": "2024-08-16T09:00:00Z",
+            "course": null,
+            "lesson": 4,
+            "amount": "95.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 17,
+        "fields": {
+            "user": 2,
+            "date": "2024-08-17T10:00:00Z",
+            "course": 1,
+            "lesson": null,
+            "amount": "140.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 18,
+        "fields": {
+            "user": 3,
+            "date": "2024-08-18T11:00:00Z",
+            "course": null,
+            "lesson": 2,
+            "amount": "65.00",
+            "payment_method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 19,
+        "fields": {
+            "user": 4,
+            "date": "2024-08-19T12:00:00Z",
+            "course": 2,
+            "lesson": null,
+            "amount": "190.00",
+            "payment_method": "cash"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 20,
+        "fields": {
+            "user": 5,
+            "date": "2024-08-20T13:00:00Z",
+            "course": null,
+            "lesson": 1,
+            "amount": "105.00",
+            "payment_method": "transfer"
+        }
+    }
+]

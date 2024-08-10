@@ -1,21 +1,33 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer
+from lms.serializers import CourseSerializer, LessonSerializer, CourseLessonCountSerializer
+from rest_framework import viewsets
+from rest_framework.response import Response
 
 
-class CourseViewSet(ModelViewSet):
+class CourseViewSet(viewsets.ModelViewSet):
+    """Выводит все курсы"""
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
 
-# Получение списка и создание уроков
 class LessonListCreateAPIView(generics.ListCreateAPIView):
+    """Получение списка и создание уроков"""
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
 
-# Получение, обновление и удаление одного урока
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Получение, обновление и удаление одного урока"""
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
+
+class CourseLessonCountViewSet(viewsets.ViewSet):
+    def list(self, request):
+        queryset = Course.objects.all()
+        serializer = CourseLessonCountSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+

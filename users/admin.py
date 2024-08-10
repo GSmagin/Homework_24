@@ -18,11 +18,11 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'phone', 'city', 'avatar', 'password1', 'password2'),
         }),
     )
-    list_display = ['email', 'phone', 'city', 'avatar', 'date_joined', 'last_login', 'is_staff', 'is_superuser']
+    list_display = ['id', 'email', 'phone', 'city', 'avatar', 'date_joined', 'last_login', 'is_staff', 'is_superuser']
+    list_display_links = ('id', 'email',)
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
 
+
 admin.site.register(User, UserAdmin)
-
-
