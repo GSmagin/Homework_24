@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer, CourseLessonCountSerializer
+from lms.serializers import CourseSerializer, LessonSerializer
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -24,10 +24,10 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LessonSerializer
 
 
-class CourseLessonCountViewSet(viewsets.ViewSet):
-    def list(self, request):
-        queryset = Course.objects.all()
-        serializer = CourseLessonCountSerializer(queryset, many=True)
-        return Response(serializer.data)
+# class CourseLessonCountViewSet(viewsets.ViewSet):
+#     def list(self, request):
+#         queryset = Course.objects.all()
+#         serializer = CourseLessonCountSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
 
