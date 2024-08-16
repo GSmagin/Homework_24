@@ -5,20 +5,20 @@ from .models import Course, Lesson
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'preview', 'description']
+    list_display = ['id', 'title', 'preview', 'description', 'owner']
     list_display_links = ['id', 'title']
     search_fields = ['title', 'preview', 'description']
     list_filter = ['title', 'preview', 'description']
-    list_editable = ['preview']
+    list_editable = ['preview', 'owner']
 
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'course', 'preview', 'video_url']
+    list_display = ['id', 'title', 'course', 'preview', 'video_url', 'owner']
     list_display_links = ['id', 'title']
     search_fields = ['id', 'title']
     list_filter = ['id']
-    list_editable = ['course']
+    list_editable = ['course', 'owner']
 
 
 @admin.register(Payment)

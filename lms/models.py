@@ -1,5 +1,7 @@
 from django.db import models
 from utils.const import NULLABLE
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -8,6 +10,13 @@ class Course(models.Model):
         upload_to="courses/", **NULLABLE, verbose_name="Превью (картинка)"
     )
     description = models.TextField(verbose_name="Описание курса")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        related_name='courses',
+        verbose_name="Владелец курса"
+    )
 
     def __str__(self):
         return self.title
@@ -34,6 +43,13 @@ class Lesson(models.Model):
         help_text="Укажите превью урока"
     )
     video_url = models.URLField(**NULLABLE, verbose_name="Ссылка на видео", help_text="Укажите ссылку на видео урока")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        **NULLABLE,
+        related_name='lessons',
+        verbose_name="Владелец урока"
+    )
 
     def __str__(self):
         return self.title
