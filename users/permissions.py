@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from rest_framework import permissions
 
+
 class IsOwnerOrReadOnly(BasePermission):
     """
     Разрешает редактирование только владельцу объекта.

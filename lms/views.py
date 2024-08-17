@@ -1,7 +1,9 @@
 from rest_framework import viewsets, generics
+from rest_framework.exceptions import PermissionDenied
+
 from lms.models import Course, Lesson
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsModeratorOrOwner
+from .permissions import IsModeratorOrOwner, IsOwner
 from .serializers import CourseSerializer, LessonSerializer
 
 
@@ -37,7 +39,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     """Получение списка и создание уроков"""
-    # queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
     def get_queryset(self):
@@ -59,33 +60,35 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
         if self.request.method == 'GET':
             self.permission_classes = [IsAuthenticated]
         elif self.request.method == 'POST':
-            self.permission_classes = [IsModeratorOrOwner]
+            self.permission_classes = [IsAuthenticated, IsOwner]  # Проверка на владельца и аутентификацию
         return [permission() for permission in self.permission_classes]
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        if user.groups.filter(name='Moderators').exists():
+            # Если пользователь модератор, запрещаем создание урока
+            raise PermissionDenied("Модераторам запрещено создавать уроки.")
+        # Сохраняем урок с привязкой к текущему пользователю
+        serializer.save(owner=user)
 
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """Получение, обновление и удаление одного урока"""
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsModeratorOrOwner]
 
     def get_permissions(self):
-        """
-        Устанавливает права доступа для методов.
-        """
-        # Для всех методов (GET, PUT, PATCH, DELETE) используем IsModeratorOrOwner
-        self.permission_classes = [IsModeratorOrOwner]
+        if self.request.method == 'GET':
+            self.permission_classes = [IsAuthenticated]
+        elif self.request.method in ['PUT', 'PATCH']:
+            self.permission_classes = [IsModeratorOrOwner]  # Модераторы и владельцы могут обновлять
+        elif self.request.method == 'DELETE':
+            self.permission_classes = [IsOwner]  # Только владельцы могут удалять
         return [permission() for permission in self.permission_classes]
 
-    def perform_update(self, serializer):
+    def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    def perform_destroy(self, instance):
-        if instance.owner == self.request.user or self.request.user.groups.filter(name='Moderators').exists():
-            instance.delete()
 
 
 # class CourseViewSet(viewsets.ModelViewSet):
