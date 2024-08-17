@@ -4,7 +4,7 @@ from .views import UserListCreateAPIView, UserDetailAPIView, UserRegistrationAPI
     PaymentListAPIView, UserProfileAPIView
 
 urlpatterns = [
-     path('profile/', UserProfileAPIView.as_view(), name='user-profile'),
+#     path('profile/', UserProfileAPIView.as_view(), name='user-profile'),
     path('payments/', PaymentListAPIView.as_view(), name='payment-list'),
     # path('profile/<int:pk>/', UserDetailAPIView.as_view(), name='user-detail'),
     path('list/', UserListCreateAPIView.as_view(), name='user-list'),
