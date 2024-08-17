@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from .filters import PaymentFilter
 from .models import Payment
 from .serializers import UserSerializer
+from .permissions import IsOwnerOrReadOnly
 
 User = get_user_model()
 
@@ -33,6 +34,24 @@ class SomeProtectedView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+
+class UserProfileRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]  # Только авторизованные пользователи
+
+    def get_queryset(self):
+        """
+        Ограничиваем доступ к профилям, чтобы они были видны только авторизованным пользователям.
+        """
+        return User.objects.filter(id=self.request.user.id)
+
+    def get_object(self):
+        """
+        Получаем объект пользователя для показа или редактирования.
+        """
+        return User.objects.get(pk=self.kwargs['pk'])
 
 # class UserProfileAPIView(generics.RetrieveUpdateAPIView):
 #     queryset = User.objects.all()
