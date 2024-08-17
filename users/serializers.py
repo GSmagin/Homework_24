@@ -36,6 +36,11 @@ class UserSerializer(serializers.ModelSerializer):
             representation.pop('payment_history', None)
         return representation
 
+    def get_payments(self, obj):
+        # Фильтруем платежи для данного пользователя
+        payments = Payment.objects.filter(user=obj)
+        return PaymentSerializer(payments, many=True).data
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -86,18 +91,42 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['id', 'user', 'user_email', 'date', 'course', 'course_title', 'lesson', 'lesson_title', 'amount',
-                  'payment_method', 'payment_method_display']
+        fields = [
+            'id',
+            'user',
+            'user_email',
+            'date',
+            'course',
+            'course_title',
+            'lesson',
+            'lesson_title',
+            'amount',
+            'payment_method',
+            'payment_method_display'
+        ]
 
     def get_user_email(self, obj):
+        # Возвращаем email пользователя
         return obj.user.email
 
     def get_course_title(self, obj):
+        # Возвращаем название курса, если оно есть
         if obj.course:
             return obj.course.title
         return None
 
     def get_lesson_title(self, obj):
+        # Возвращаем название урока, если оно есть
         if obj.lesson:
             return obj.lesson.title
         return None
+
+    def to_representation(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            if obj.user == request.user:
+                return super().to_representation(obj)
+            else:
+                # Можно вернуть пустой словарь или часть данных
+                return {}  # Либо return None, если вы хотите, чтобы объект вообще не показывался
+        return super().to_representation(obj)
