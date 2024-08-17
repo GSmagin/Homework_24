@@ -27,6 +27,7 @@ class CourseSerializer(ModelSerializer):
         return obj.lessons.count()
 
 
+
 # class CourseLessonCountSerializer(serializers.ModelSerializer):
 #     lessons_count = serializers.SerializerMethodField()
 #
