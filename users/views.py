@@ -62,7 +62,9 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         # Получаем текущего авторизованного пользователя
-        return self.request.user
+        # return self.request.user
+
+        return User.objects.get(user=self.request.user)
 
 
 class PaymentListAPIView(generics.ListAPIView):

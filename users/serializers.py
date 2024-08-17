@@ -16,6 +16,24 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
+    # def get_payments(self, obj):
+    #     # Фильтруем платежи для данного пользователя
+    #     payments = Payment.objects.filter(user=obj)
+    #     return PaymentSerializer(payments, many=True).data
+    #
+    def get_payments(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            # Проверяем, что obj является экземпляром User
+            if isinstance(obj, User):
+                if obj == request.user:
+                    # Фильтруем платежи для данного пользователя
+                    payments = Payment.objects.filter(user=request.user)
+                    return PaymentSerializer(payments, many=True).data
+                else:
+                    return []  # Если пользователь не является владельцем, возвращаем пустой список
+        return []
+
     def to_representation(self, instance):
         """
         Возвращает разные поля в зависимости от того, кто запрашивает данные.
@@ -31,10 +49,6 @@ class UserSerializer(serializers.ModelSerializer):
             representation.pop('payment_history', None)
         return representation
 
-    def get_payments(self, obj):
-        # Фильтруем платежи для данного пользователя
-        payments = Payment.objects.filter(user=obj)
-        return PaymentSerializer(payments, many=True).data
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
