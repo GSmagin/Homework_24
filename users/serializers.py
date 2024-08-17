@@ -16,11 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
-    def get_payments(self, obj):
-        # Фильтруем платежи для данного пользователя
-        payments = Payment.objects.filter(user=obj)
-        return PaymentSerializer(payments, many=True).data
-
     def to_representation(self, instance):
         """
         Возвращает разные поля в зависимости от того, кто запрашивает данные.
