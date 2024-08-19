@@ -9,8 +9,19 @@ from .serializers import CourseSerializer, LessonSerializer
 
 class CourseViewSet(viewsets.ModelViewSet):
     """Выводит все курсы"""
-    queryset = Course.objects.all()
+#    queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Переопределение queryset для фильтрации курсов по пользователю"""
+        user = self.request.user
+        if user.groups.filter(name='Moderators').exists():
+            # Если пользователь модератор, возвращаем все курсы
+            return Course.objects.all()
+        else:
+            # Если пользователь не модератор, возвращаем только курсы, которые он создал
+            return Course.objects.filter(owner=user)
 
     # def get_queryset(self):
     #     """
@@ -39,8 +50,15 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     """Получение списка и создание уроков"""
-    queryset = Lesson.objects.all()
+#    queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name='Moderators').exists():
+            return Lesson.objects.all()
+        else:
+            return Lesson.objects.filter(owner=user)
 
     # def get_queryset(self):
     #     """
@@ -77,8 +95,15 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """Получение, обновление и удаление одного урока"""
-    queryset = Lesson.objects.all()
+#    queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name='Moderators').exists():
+            return Lesson.objects.all()
+        else:
+            return Lesson.objects.filter(owner=user)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -91,7 +116,6 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         serializer.save(owner=self.request.user)
-
 
 
 # class CourseViewSet(viewsets.ModelViewSet):
