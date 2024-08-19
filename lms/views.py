@@ -56,6 +56,8 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
     #             # Если пользователь не модератор, возвращаем только его уроки
     #             return Lesson.objects.filter(owner=user)
     #     return Lesson.objects.none()  # Если пользователь не аутентифицирован, возвращаем пустой queryset
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -82,12 +84,12 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             self.permission_classes = [IsAuthenticated]
         elif self.request.method in ['PUT', 'PATCH']:
-            self.permission_classes = [IsAuthenticated, IsOwner | ~IsModerator]  # Модераторы и владельцы могут обновлять
+            self.permission_classes = [IsAuthenticated, IsOwner | IsModerator]  # Модераторы и владельцы могут обновлять
         elif self.request.method == 'DELETE':
             self.permission_classes = [IsAuthenticated, IsOwner | ~IsModerator]  # Только владельцы могут удалять
         return [permission() for permission in self.permission_classes]
 
-    def perform_create(self, serializer):
+    def perform_update(self, serializer):
         serializer.save(owner=self.request.user)
 
 
