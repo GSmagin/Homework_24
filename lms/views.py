@@ -36,6 +36,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     #     return Course.objects.none()  # Если пользователь не аутентифицирован, возвращаем пустой queryset
 
     def get_permissions(self):
+        """Назначение прав доступа на основе действия"""
         if self.action in ['list', 'retrieve']:
             self.permission_classes = [IsAuthenticated]
         elif self.action in ['create']:
@@ -48,6 +49,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return [permission() for permission in self.permission_classes]
 
     def perform_create(self, serializer):
+        """Назначение владельца при создании курса"""
         serializer.save(owner=self.request.user)
 
 

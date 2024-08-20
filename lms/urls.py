@@ -13,7 +13,7 @@ router.register('courses', CourseViewSet, basename='course')
 urlpatterns = [
     path('lessons/', LessonListCreateAPIView.as_view(), name='lesson-list-create'),
     path('lessons/<int:pk>/', LessonRetrieveUpdateDestroyAPIView.as_view(), name='lesson-detail'),
-    path('courses/', CourseViewSet.as_view({'get': 'list'}), name='course-list'),
+    # path('courses/', CourseViewSet.as_view({'get': 'list'}), name='course-list'),
 #    path('courses/lessons-count/', CourseLessonCountViewSet.as_view({'get': 'list'}), name='courses-lessons-count'),
 ]
 urlpatterns += router.urls
