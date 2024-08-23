@@ -2,10 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from lms.models import Course, Lesson, Subscription
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 
 User = get_user_model()
+
 
 class CourseModelTest(TestCase):
     def setUp(self):
@@ -13,8 +14,7 @@ class CourseModelTest(TestCase):
         self.course = Course.objects.create(
             title="Test Course",
             description="Test Description",
-            owner=self.user,
-            price=100.00
+            owner=self.user
         )
 
     def test_course_creation(self):
@@ -31,8 +31,7 @@ class LessonModelTest(TestCase):
         self.course = Course.objects.create(
             title="Test Course",
             description="Test Description",
-            owner=self.user,
-            price=100.00
+            owner=self.user
         )
         self.lesson = Lesson.objects.create(
             title="Test Lesson",
@@ -55,8 +54,7 @@ class SubscriptionModelTest(TestCase):
         self.course = Course.objects.create(
             title="Test Course",
             description="Test Description",
-            owner=self.user,
-            price=100.00
+            owner=self.user
         )
         self.subscription = Subscription.objects.create(user=self.user, course=self.course)
 
@@ -69,6 +67,48 @@ class SubscriptionModelTest(TestCase):
         self.assertEqual(str(self.subscription), expected_str)
 
 
+class SubscriptionAPITestCase(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(email='test@example.com', password='testpassword')
+        self.course = Course.objects.create(
+            title="Test Course",
+            description="Test Description",
+            owner=self.user,
+        )
+        self.subscription = Subscription.objects.create(user=self.user, course=self.course)
+
+        self.client.force_authenticate(user=self.user)
+
+    def test_subscription_creation(self):
+        url = reverse('lms:payment-list-create')  # Убедитесь, что у вас есть этот маршрут в urls.py
+        data = {
+            'course_id': self.course.id
+        }
+        response = self.client.post(url, data, format='json')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Subscription.objects.latest('id').user, self.user)
+
+    def test_subscription_list(self):
+        url = reverse('lms-api:payment-list-create')  # Убедитесь, что у вас есть этот маршрут в urls.py
+        response = self.client.get(url)
+        response_json = response.json()
+        print(response_json)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('subscription_all', response.data)
+        self.assertEqual(len(response.data['subscription_all']), 1)  # Учитываем одну подписку
+
+    def test_subscription_deletion(self):
+        url = reverse('lms-api:payment-list-create')  # Убедитесь, что у вас есть этот маршрут в urls.py
+        data = {
+            'course_id': self.course.id
+        }
+        response = self.client.delete(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Subscription.objects.count(), 0)  # Подписка удалена
+
+
 class CourseViewSetTest(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -76,8 +116,7 @@ class CourseViewSetTest(TestCase):
         self.course = Course.objects.create(
             title="Test Course",
             description="Test Description",
-            owner=self.user,
-            price=100.00
+            owner=self.user
         )
         self.client.force_authenticate(user=self.user)
 
@@ -89,8 +128,7 @@ class CourseViewSetTest(TestCase):
     def test_create_course(self):
         data = {
             'title': 'New Course',
-            'description': 'New Course Description',
-            'price': 50.00
+            'description': 'New Course Description'
         }
         response = self.client.post(reverse('lms:course-list'), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -99,8 +137,7 @@ class CourseViewSetTest(TestCase):
     def test_update_course(self):
         data = {
             'title': 'Updated Course',
-            'description': 'Updated Description',
-            'price': 150.00
+            'description': 'Updated Description'
         }
         response = self.client.put(reverse('lms:course-detail', kwargs={'pk': self.course.pk}), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
