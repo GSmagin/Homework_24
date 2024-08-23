@@ -10,7 +10,7 @@ app_name = LmsConfig.name
 #router = SimpleRouter()
 router = routers.DefaultRouter()
 
-router.register('course', CourseViewSet, basename='courses')
+router.register('course', CourseViewSet, basename='course')
 
 urlpatterns = [
     path('', include(router.urls)),

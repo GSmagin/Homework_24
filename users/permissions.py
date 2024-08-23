@@ -6,7 +6,7 @@ class IsModerator(BasePermission):
         return request.user and request.user.groups.filter(name='Moderators').exists()
 
     def has_object_permission(self, request, view, obj):
-        return request.user.groups.filter(name='moderator').exists()
+        return request.user.groups.filter(name='Moderators').exists()
 
 
 class IsOwner(BasePermission):

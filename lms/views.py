@@ -15,7 +15,7 @@ from rest_framework import status
 
 class CourseViewSet(viewsets.ModelViewSet):
     """Выводит все курсы"""
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by('id')  # Сортировка по полю 'id'
     serializer_class = CourseSerializer
     pagination_class = LMSPagination
     permission_classes = [IsAuthenticated]
@@ -23,12 +23,16 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Переопределение queryset для фильтрации курсов по пользователю"""
         user = self.request.user
+        queryset = Course.objects.all()  # По умолчанию берем все курсы
+
         if user.groups.filter(name='Moderators').exists():
             # Если пользователь модератор, возвращаем все курсы
-            return Course.objects.all()
+            queryset = queryset.order_by('id')  # Добавляем сортировку
         else:
             # Если пользователь не модератор, возвращаем только курсы, которые он создал
-            return Course.objects.filter(owner=user)
+            queryset = queryset.filter(owner=user).order_by('id')  # Добавляем сортировку
+
+        return queryset
 
     def perform_create(self, serializer):
         """Назначение владельца при создании курса"""
@@ -78,6 +82,7 @@ class LessonDetailView(generics.RetrieveAPIView):
     """Получение одного урока"""
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
