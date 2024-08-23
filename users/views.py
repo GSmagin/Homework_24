@@ -1,14 +1,10 @@
-from django_filters import rest_framework as filters
 from rest_framework import generics, permissions
 from django.contrib.auth import get_user_model
+from .permissions import IsOwner
 from .serializers import UserRegistrationSerializer, PaymentSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from .filters import PaymentFilter
 from .models import Payment
 from .serializers import UserSerializer
-from .permissions import IsOwnerOrReadOnly
-
 
 User = get_user_model()
 
@@ -40,7 +36,7 @@ class SomeProtectedView(generics.ListCreateAPIView):
 class UserProfileRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]  # Только авторизованные пользователи
+    permission_classes = [IsAuthenticated]  # Только авторизованные пользователи
 
     def get_queryset(self):
         """
@@ -75,7 +71,7 @@ class PaymentListAPIView(generics.ListAPIView):
 
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwner]
 
     def get_queryset(self):
         # Ограничиваем queryset только платежами текущего пользователя
