@@ -13,10 +13,11 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class CourseViewSet(viewsets.ModelViewSet, LMSPagination):
+class CourseViewSet(viewsets.ModelViewSet):
     """Выводит все курсы"""
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    pagination_class = LMSPagination
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -46,11 +47,12 @@ class CourseViewSet(viewsets.ModelViewSet, LMSPagination):
         return [permission() for permission in self.permission_classes]
 
 
-class LessonListView(generics.ListAPIView, LMSPagination):
+class LessonListView(generics.ListAPIView):
     """Получение списка уроков"""
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]
+    pagination_class = LMSPagination
 
     def get_queryset(self):
         user = self.request.user
