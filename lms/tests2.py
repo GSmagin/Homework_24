@@ -27,6 +27,81 @@ class LessonTestCase(APITestCase):
 
         self.client.force_authenticate(user=self.user)
 
+    def test_lesson_list_unauthenticated(self):
+        # Проверяем, что неавторизованный пользователь не может получить список уроков
+        self.client.force_authenticate(user=None)  # Снимаем авторизацию
+        url = reverse("lms-api:lesson-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_lesson_detail_unauthenticated(self):
+        # Проверяем, что неавторизованный пользователь не может получить детали урока
+        self.client.force_authenticate(user=None)  # Снимаем авторизацию
+        url = reverse("lms:lesson-detail", args=[self.lesson.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_moderator_access(self):
+        # Проверяем, что модератор может получить доступ к уроку, даже если он ему не принадлежит
+        self.client.force_authenticate(user=self.moder)  # Авторизация как модератор
+        url = reverse("lms:lesson-detail", args=[self.lesson2.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("title"), self.lesson2.title)
+
+    def test_moderator_can_update_any_lesson(self):
+        # Проверяем, что модератор может редактировать любой урок
+        self.client.force_authenticate(user=self.moder)  # Авторизация как модератор
+        url = reverse("lms:lesson-update", args=[self.lesson2.id])
+        data = {
+            "title": "Moderator updated lesson",
+            "description": "Moderator updated lesson description",
+            "video_url": "https://www.youtube.com/watch?v=newlink",
+            "course": self.course.id
+        }
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("title"), "Moderator updated lesson")
+
+    def test_moderator_cannot_delete_lesson(self):
+        # Проверяем, что модератор не может удалить урок
+        self.client.force_authenticate(user=self.moder)  # Авторизация как модератор
+        url = reverse("lms:lesson-delete", args=[self.lesson.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_unauthorized_cannot_create_lesson(self):
+        # Проверяем, что неавторизованный пользователь не может создать урок
+        self.client.force_authenticate(user=None)  # Снимаем авторизацию
+        url = reverse("lms:lesson-create")
+        data = {
+            "title": "New Unauthorized Lesson",
+            "description": "New lesson description",
+            "video_url": "https://www.youtube.com/watch?v=unauthorized",
+            "course": self.course.id
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unauthorized_cannot_update_lesson(self):
+        # Проверяем, что неавторизованный пользователь не может обновить урок
+        self.client.force_authenticate(user=None)  # Снимаем авторизацию
+        url = reverse("lms:lesson-update", args=[self.lesson.id])
+        data = {
+            "title": "Updated lesson by unauthorized",
+            "description": "Updated description",
+            "video_url": "https://www.youtube.com/watch?v=update",
+            "course": self.course.id
+        }
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unauthorized_cannot_delete_lesson(self):
+        # Проверяем, что неавторизованный пользователь не может удалить урок
+        self.client.force_authenticate(user=None)  # Снимаем авторизацию
+        url = reverse("lms:lesson-delete", args=[self.lesson.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_lesson_list(self):
         url = reverse("lms-api:lesson-list")
@@ -150,28 +225,45 @@ class LessonTestCase(APITestCase):
         )
 
 
-# class SubscriptionTestCase(APITestCase):
-#
-#     def setUp(self):
-#         self.user = User.objects.create(email="test@mail.com", password="test")
-#         self.course = Course.objects.create(title="Test course", description="Test course description")
-#         self.subscription = Subscription.objects.create(user=self.user, course=self.course)
-#
-#         self.client.force_authenticate(user=self.user)
-#
-#     def test_subscription_on_off(self):
-#         url = reverse("lms:payment-list-create")
-#         data = {
-#             "course_id": self.course.id,
-#             "user": self.user.id
-#         }
-#         response = self.client.post(url, data)
-#         self.assertEqual(
-#             response.status_code, status.HTTP_200_OK
-#         )
-#         print(response.data.get("message"))
-#         self.assertIn("Подписка добавлена", response.data.get("message"))
-#
-#         response = self.client.delete(url, data={"course_id": self.course.id})
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertIn("Подписка удалена", response.data.get("message"))
+class SubscriptionTestCase(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(email="test@mail.com", password="test")
+        self.course = Course.objects.create(title="Test course", description="Test course description")
+
+        self.client.force_authenticate(user=self.user)
+
+    def test_subscription_on_off(self):
+        url = reverse("lms:payment-list-create")
+        data = {
+            "course_id": self.course.id,
+            "user": self.user.id
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK
+        )
+        self.assertIn("Подписка добавлена", response.data.get("message"))
+        response = self.client.post(url, data={"course_id": self.course.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("Подписка удалена", response.data.get("message"))
+
+
+class SubscriptionTestCaseNoAuth(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(email="test@mail.com", password="test")
+        self.course = Course.objects.create(title="Test course", description="Test course description")
+
+    def test_subscription_on_off(self):
+        url = reverse("lms:payment-list-create")
+        data = {
+            "course_id": self.course.id,
+            "user": self.user.id
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code, status.HTTP_401_UNAUTHORIZED
+        )
+        response = self.client.post(url, data={"course_id": self.course.id})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

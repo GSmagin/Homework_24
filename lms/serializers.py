@@ -1,3 +1,4 @@
+from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 from lms.models import Course, Lesson, Subscription
 from rest_framework import serializers
@@ -28,15 +29,20 @@ class LessonSerializer(ModelSerializer):
 class CourseSerializer(ModelSerializer):
     lessons = LessonSerializer(read_only=True, many=True)
     lessons_count = serializers.IntegerField(source='lesson.count', read_only=True)
+    is_subscribed = SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'description', 'preview', 'owner', 'lessons', 'lessons_count']
+        fields = ['id', 'title', 'description', 'preview', 'owner', 'lessons', 'lessons_count', 'is_subscribed']
 
     def create(self, validated_data):
         course = Course.objects.create(**validated_data)
         course.owner = self.context['request'].user
         return course
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get("request").user
+        return Subscription.objects.filter(user=user, course=obj).exists()
 
     def get_subscription(self, obj):
         user = self.context['request'].user

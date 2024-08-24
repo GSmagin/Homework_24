@@ -116,51 +116,26 @@ class SubscriptionDetailAPIView(views.APIView, LMSPagination):
         return self.get_paginated_response(serializer.data)
 
 
-class SubscriptionCreateDeleteAPIView(views.APIView, LMSPagination):
-
-    def post(self, request, *args, **kwargs, ):
-        course = self.get_course_or_404(Course, course_id=request.data.get('course_id'))
-        subs, _ = Subscription.objects.get_or_create(user=self.request.user, course=course)
-        serializer = SubscriptionSerializer(subs)
-        response = {
-            'results': serializer.data,
-            'detail': f'Курс {course.title} сохранен в подписки'
-        }
-        return Response(response, status.HTTP_201_CREATED)
-
-    def delete(self, request, *args, **kwargs):
-        course = self.get_course_or_404(Course, course_id=request.data.get('course_id'))
-        Subscription.objects.filter(user=self.request.user, course=course).delete()
-        response = {
-            'detail': f'Курс {course.title} удален из подписок',
-        }
-        # return Response(status=status.HTT_204_NO_CONTENT)
-        return Response(response)
-
-    def get(self, request, *args, **kwargs):
-        subscriptions = Subscription.objects.filter(user=request.user)
-        serializer = SubscriptionSerializer(subscriptions, many=True)
-        response = {
-            'subscription_all': serializer.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
-    @staticmethod
-    def get_course_or_404(course, course_id):
-        try:
-            return get_object_or_404(course, id=course_id)
-        except (TypeError, ValueError, ValidationError, Http404):
-            response = {
-                'detail': f'Курс с id-{course_id} не найден'
-            }
-            raise Http404(response)
-
-    def handle_exception(self, exc):
-        if isinstance(exc, Http404):
-            return Response(exc.args[0], status=404)
-        return super().handle_exception(exc)
-
-# class SubscriptionCreateDeleteAPIView(APIView, LMSPagination):
+# class SubscriptionCreateDeleteAPIView(views.APIView, LMSPagination):
+#
+#     def post(self, request, *args, **kwargs, ):
+#         course = self.get_course_or_404(Course, course_id=request.data.get('course_id'))
+#         subs, _ = Subscription.objects.get_or_create(user=self.request.user, course=course)
+#         serializer = SubscriptionSerializer(subs)
+#         response = {
+#             'results': serializer.data,
+#             'detail': f'Курс {course.title} сохранен в подписки'
+#         }
+#         return Response(response, status.HTTP_201_CREATED)
+#
+#     def delete(self, request, *args, **kwargs):
+#         course = self.get_course_or_404(Course, course_id=request.data.get('course_id'))
+#         Subscription.objects.filter(user=self.request.user, course=course).delete()
+#         response = {
+#             'detail': f'Курс {course.title} удален из подписок',
+#         }
+#         # return Response(status=status.HTT_204_NO_CONTENT)
+#         return Response(response)
 #
 #     def get(self, request, *args, **kwargs):
 #         subscriptions = Subscription.objects.filter(user=request.user)
@@ -170,20 +145,45 @@ class SubscriptionCreateDeleteAPIView(views.APIView, LMSPagination):
 #         }
 #         return Response(response, status=status.HTTP_200_OK)
 #
-#     def post(self, request, *args, **kwargs):
-#         user = request.user
-#         course_id = request.data.get("course_id")
-#         course = get_object_or_404(Course, id=course_id)
+#     @staticmethod
+#     def get_course_or_404(course, course_id):
+#         try:
+#             return get_object_or_404(course, id=course_id)
+#         except (TypeError, ValueError, ValidationError, Http404):
+#             response = {
+#                 'detail': f'Курс с id-{course_id} не найден'
+#             }
+#             raise Http404(response)
 #
-#         subscription = Subscription.objects.filter(user=user, course=course)
-#         if subscription.exists():
-#             subscription.delete()
-#             message = "Подписка удалена"
-#         else:
-#             Subscription.objects.create(user=user, course=course)
-#             message = "Подписка добавлена"
-#
-#         return Response({"message": message})
+#     def handle_exception(self, exc):
+#         if isinstance(exc, Http404):
+#             return Response(exc.args[0], status=404)
+#         return super().handle_exception(exc)
+
+class SubscriptionCreateDeleteAPIView(APIView, LMSPagination):
+
+    def get(self, request, *args, **kwargs):
+        subscriptions = Subscription.objects.filter(user=request.user)
+        serializer = SubscriptionSerializer(subscriptions, many=True)
+        response = {
+            'subscription_all': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        course_id = request.data.get("course_id")
+        course = get_object_or_404(Course, id=course_id)
+
+        subscription = Subscription.objects.filter(user=user, course=course)
+        if subscription.exists():
+            subscription.delete()
+            message = "Подписка удалена"
+        else:
+            Subscription.objects.create(user=user, course=course)
+            message = "Подписка добавлена"
+
+        return Response({"message": message})
 
 
 
