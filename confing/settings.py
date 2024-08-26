@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "lms.apps.LmsConfig",
     "rest_framework",
     'rest_framework_simplejwt',
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
@@ -168,3 +170,4 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
+STRIPE_API_KEY = env.str("STRIPE_API_KEY")

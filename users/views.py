@@ -1,10 +1,13 @@
 from rest_framework import generics, permissions
 from django.contrib.auth import get_user_model
+from rest_framework.generics import CreateAPIView
+
 from .permissions import IsOwner
 from .serializers import UserRegistrationSerializer, PaymentSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import Payment
 from .serializers import UserSerializer
+from users.services import create_stripe_price, create_stripe_session, create_stripe_product
 
 User = get_user_model()
 
@@ -76,9 +79,19 @@ class PaymentListAPIView(generics.ListAPIView):
     def get_queryset(self):
         # Ограничиваем queryset только платежами текущего пользователя
         return super().get_queryset().filter(user=self.request.user)
-#
-#
-# class UserDetailAPIView(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        product = create_stripe_product(payment.course)
+        price = create_stripe_price(payment.amount, product)
+        session_id, payment_link = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()
+
+
