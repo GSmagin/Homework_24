@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "lms.apps.LmsConfig",
     "rest_framework",
     'rest_framework_simplejwt',
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
