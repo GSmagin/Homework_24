@@ -33,7 +33,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         serializer.save()
 
-        if last_course_update < timezone.now() - timedelta(minutes=1):
+        if last_course_update < timezone.now() - timedelta(hours=4):
+            print(course.time_update)
             send_update_course_email.delay(course.id)
 
     def get_queryset(self):
