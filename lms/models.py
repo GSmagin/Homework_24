@@ -88,6 +88,7 @@ class Subscription(models.Model):
         **NULLABLE,
         verbose_name='Курс'
     )
+    email = models.EmailField(unique=True, **NULLABLE, help_text="Укажите вашу почту")
 
     class Meta:
         verbose_name = 'Подписка'

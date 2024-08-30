@@ -180,4 +180,24 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BEAT_SCHEDULE = {
+    "deactivate_users": {
+        "task": "users.tasks.deactivate_users",
+        "schedule": timedelta(minutes=1),
+    },
+}
+
+
+EMAIL_HOST = env.str('EMAIL_HOST')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+#EMAIL_HOST_PASSWORD = 'gvkrcgmwoyjbcbab'
+#EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
 

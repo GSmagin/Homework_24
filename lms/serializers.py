@@ -33,7 +33,7 @@ class CourseSerializer(ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'description', 'preview', 'owner', 'lessons', 'lessons_count', 'is_subscribed']
+        fields = ['id', 'title', 'time_update', 'description', 'preview', 'owner', 'lessons', 'lessons_count', 'is_subscribed']
 
     def create(self, validated_data):
         course = Course.objects.create(**validated_data)
