@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions
 from django.contrib.auth import get_user_model
 from rest_framework.generics import CreateAPIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .permissions import IsOwner
 from .serializers import UserRegistrationSerializer, PaymentSerializer
@@ -8,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Payment
 from .serializers import UserSerializer
 from users.services import create_stripe_price, create_stripe_session, create_stripe_product
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -95,3 +98,17 @@ class PaymentCreateAPIView(CreateAPIView):
         payment.save()
 
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Обновляем дату последнего входа
+        user = self.user
+        user.last_login = timezone.now()
+        user.save()
+
+        return data
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

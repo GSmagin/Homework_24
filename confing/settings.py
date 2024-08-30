@@ -186,6 +186,7 @@ CELERY_BEAT_SCHEDULE = {
     "deactivate_users": {
         "task": "users.tasks.deactivate_users",
         "schedule": timedelta(minutes=1),
+        # "schedule": timedelta(days=1),
     },
 }
 

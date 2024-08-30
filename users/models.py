@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(
@@ -47,7 +48,7 @@ class User(AbstractUser):
         help_text="Загрузите аватар"
     )
     date_joined = models.DateTimeField(default=timezone.now, verbose_name="Дата регистрации")
-    last_login = models.DateTimeField(**NULLABLE, verbose_name="Дата последнего входа")
+    last_login = models.DateTimeField(auto_now_add=True, **NULLABLE, verbose_name="Дата последнего входа")
 
     objects = UserManager()
 
