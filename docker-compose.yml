@@ -39,16 +39,16 @@ services:
 #    env_file:
 #      - .env
 #
-#  beat:
-#    build: .
-#    command: celery -A config beat --loglevel=info
-#    volumes:
-#      - .:/app
-#    depends_on:
-#      - redis
-#      - db
-#    env_file:
-#      - .env
+  beat:
+    build: .
+    command: celery -A confing beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
