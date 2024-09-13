@@ -88,11 +88,12 @@ WSGI_APPLICATION = "confing.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("DB_NAME"),
-        "USER": env.str("DB_USER"),
-        "PASSWORD": env.str("DB_PASSWORD"),
+        "NAME": env.str("POSTGRES_DB"),
+        "USER": env.str("POSTGRES_USER"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD"),
         "HOST": env.str("DB_HOST"),
         "PORT": env.int("DB_PORT"),
+        'CONN_MAX_AGE': 600,
     }
 }
 
