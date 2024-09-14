@@ -20,25 +20,24 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
   redis:
     image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
 
-#  celery:
-#    build: .
-#    command: celery -A config worker --loglevel=info
-#    volumes:
-#      - .:/app
-#    depends_on:
-#      - redis
-#      - db
-#    env_file:
-#      - .env
-#
+  celery:
+    build: .
+    command: celery -A confing worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+
   beat:
     build: .
     command: celery -A confing beat --loglevel=info
